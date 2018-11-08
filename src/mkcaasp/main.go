@@ -49,16 +49,20 @@ var (
 
 func main() {
 	flag.Parse()
+	wd, _ := os.Getwd()
 	if *howto {
 		fmt.Fprintf(os.Stdout, "%v\n", howtouse)
 		os.Exit(0)
 	}
+	os.Chdir(wd)
 	if *caasp {
 		utilities.CmdRun("caasp-openstack-terraform", *openstack, fmt.Sprintf(command, *action))
 	}
+	os.Chdir(wd)
 	if *ses {
 		utilities.CmdRun("ses-openstack-terraform", *openstack, fmt.Sprintf(command, *action))
 	}
+	os.Chdir(wd)
 	if *caasptfoutput {
 		out, _ := utilities.CmdRun("caasp-openstack-terraform", *openstack, "terraform output -json")
 		a := utilities.TFOutput{}
@@ -66,6 +70,7 @@ func main() {
 		json.Unmarshal([]byte(out), &a)
 		fmt.Println(a.IPAdminExternal.Value, a.IPAdminInternal.Value, a.IPMastersExternal.Value, a.IPWorkersExternal.Value)
 	}
+	os.Chdir(wd)
 	if *sestfoutput {
 		out, _ := utilities.CmdRun("ses-openstack-terraform", *openstack, "terraform output -json")
 		a := utilities.TFOutput{}
